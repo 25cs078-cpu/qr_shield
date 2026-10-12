@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d18">
+  <title>QR Shield | QR Safety Scanner</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- QR decoding and demo QR generation libraries are loaded from CDNs. Internet is needed for these libraries. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="QR Shield home">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 20 6v5.4c0 5-3.4 8.1-8 9.8-4.6-1.7-8-4.8-8-9.8V6l8-3.2Z"/><path d="m8.5 12.1 2.2 2.2 4.8-5"/></svg></span>
+      <span>QR<span class="brand-accent">SHIELD</span><small>QR SAFETY INTELLIGENCE</small></span>
+    </a>
+    <div class="topbar-right"><span class="status-dot"></span><span>LOCAL ANALYSIS</span><span class="topbar-divider"></span><span class="version">PROTOTYPE v1.0</span></div>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-line"></span> SMART QR THREAT DETECTION</div>
+      <h1>Scan smart.<br><span>Stay protected.</span></h1>
+      <p class="hero-copy">Inspect a QR code before you trust it. Decode its hidden content, analyze suspicious URL signals, and understand the result — without automatically opening the destination.</p>
+      <div class="hero-pills"><span><i class="mini-icon">⌁</i> Safe decoding</span><span><i class="mini-icon">◈</i> Explainable risk score</span><span><i class="mini-icon">◉</i> Privacy-first analysis</span></div>
+    </section>
+
+    <section class="workspace">
+      <div class="section-heading"><div><span class="section-index">01</span><h2>Analyze a QR code</h2></div><span class="subtle-label">UPLOAD OR USE CAMERA</span></div>
+      <div class="scanner-grid">
+        <div class="panel upload-panel">
+          <div id="dropZone" class="drop-zone" tabindex="0" role="button" aria-label="Upload a QR code image">
+            <div class="upload-art"><div class="scan-corner tl"></div><div class="scan-corner tr"></div><div class="scan-corner bl"></div><div class="scan-corner br"></div><div class="qr-art"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="scan-line"></div></div>
+            <h3>Drop your QR image here</h3>
+            <p>or choose a PNG, JPG, WEBP image</p>
+            <button class="btn btn-primary" id="chooseFileBtn" type="button"><span>＋</span> Choose image</button>
+            <input id="fileInput" type="file" accept="image/*" hidden>
+            <div class="privacy-note"><span>▣</span> Image is processed in your browser</div>
+          </div>
+          <div class="panel-footer"><span class="tiny-lock">⌑</span> No destination is opened automatically</div>
+          <div class="camera-row"><div><strong>Prefer a live scan?</strong><p>Use your device camera to inspect a QR code.</p></div><button id="cameraBtn" class="btn btn-secondary" type="button">Start camera</button></div>
+          <div id="cameraWrap" class="camera-wrap hidden"><video id="cameraVideo" playsinline muted></video><div class="camera-overlay"><span></span></div><div class="camera-actions"><span id="cameraStatus">Point your camera at a QR code</span><button id="stopCameraBtn" class="btn btn-secondary btn-small" type="button">Stop</button></div></div>
+        </div>
+
+        <div class="panel result-panel" id="resultPanel">
+          <div class="result-top"><div><span class="subtle-label">SCAN REPORT</span><h3 id="resultTitle">Waiting for a QR code</h3></div><span class="result-icon neutral" id="resultIcon">⌁</span></div>
+          <div class="empty-state" id="emptyState"><div class="empty-shield"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6 53 14v14c0 13-8.9 21.3-21 26-12.1-4.7-21-13-21-26V14L32 6Z"/><path d="M32 21v12m0 7h.01"/></svg></div><p>Your analysis will appear here</p><span>Upload or scan a QR image to begin.</span></div>
+          <div id="reportContent" class="hidden">
+            <div class="risk-summary"><div><div class="risk-label">RISK SCORE</div><div class="risk-number"><span id="riskScore">0</span><small>/100</small></div></div><div class="risk-meter"><div class="meter-track"><div id="meterFill" class="meter-fill"></div></div><div class="meter-labels"><span>LOW</span><span>HIGH</span></div></div></div>
+            <div class="classification" id="classification"><span class="classification-dot"></span><span id="classificationText">No obvious risks detected</span></div>
+            <div class="content-block"><div class="block-label">DECODED CONTENT <span id="payloadType" class="type-tag">TEXT</span></div><div id="decodedPayload" class="decoded-payload"></div><div class="payload-actions"><button id="copyBtn" class="text-action" type="button">▣ Copy content</button><span id="copyStatus" aria-live="polite"></span></div></div>
+            <div class="content-block"><div class="block-label">ANALYSIS FINDINGS <span id="findingCount" class="finding-count">0 checks</span></div><div id="findingsList" class="findings-list"></div></div>
+            <div class="report-disclaimer"><span>ⓘ</span><p>This is a rule-based prototype, not a guarantee of safety. Unknown or new threats may not be detected. Review destinations carefully.</p></div>
+            <button id="resetBtn" class="btn btn-secondary reset-btn" type="button">Analyze another QR code</button>
+          </div>
+        </div>
+      </div>
+      <div class="demo-strip"><div class="demo-copy"><span class="demo-spark">✦</span><div><strong>Try a demo QR</strong><p>Generate a sample QR code to test the scanner.</p></div></div><div class="demo-buttons"><button class="demo-btn" data-demo="safe" type="button"><span class="demo-dot green"></span> Example URL</button><button class="demo-btn" data-demo="suspicious" type="button"><span class="demo-dot yellow"></span> Suspicious URL</button><button class="demo-btn" data-demo="text" type="button"><span class="demo-dot blue"></span> Plain text</button></div></div>
+      <div id="demoStage" class="demo-stage hidden"><div id="demoQr" class="demo-qr"></div><div class="demo-stage-copy"><span class="subtle-label">SAMPLE QR GENERATED</span><h3 id="demoTitle">Example QR</h3><p id="demoDescription">Use this sample to test QR decoding.</p><button id="analyzeDemoBtn" class="btn btn-primary" type="button">Analyze this QR</button></div><button id="closeDemoBtn" class="close-demo" aria-label="Close sample QR" type="button">×</button></div>
+    </section>
+
+    <section class="how-section">
+      <div class="section-heading"><div><span class="section-index">02</span><h2>How the protection works</h2></div><span class="subtle-label">THREE LAYERS</span></div>
+      <div class="feature-grid">
+        <article class="feature-card"><div class="feature-number">01</div><div class="feature-icon cyan">⌗</div><h3>Decode safely</h3><p>Extract the QR payload and show it as text. The scanner never visits the destination by itself.</p></article>
+        <article class="feature-card"><div class="feature-number">02</div><div class="feature-icon purple">⌕</div><h3>Inspect the URL</h3><p>Check for signals such as IP-address hosts, shortened links, unusual characters and insecure HTTP.</p></article>
+        <article class="feature-card"><div class="feature-number">03</div><div class="feature-icon orange">◈</div><h3>Explain the risk</h3><p>Combine rule-based indicators into a score and show the reasons behind each warning.</p></article>
+      </div>
+    </section>
+
+    <footer><div class="footer-brand"><span class="footer-shield">⬡</span> QR SHIELD</div><span>Product Development Lab · Academic prototype</span><span class="footer-right"><span class="status-dot"></span> ANALYSIS RUNS LOCALLY</span></footer>
+  </main>
+  <canvas id="workCanvas" hidden></canvas>
+  <div id="qrScratch" class="scratch" aria-hidden="true"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
